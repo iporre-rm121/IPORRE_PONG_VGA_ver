@@ -9,12 +9,40 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+This project is a hardware-implemented Pong Game for two players, designed to output a standard VGA signal at 640x480 @ 60Hz. The core logic is purely combinational and sequential, without the use of a microprocessor or external memory (ROM/RAM).
+
+VGA Generation: A synchronization module (hvsync_generator) manages the horizontal and vertical timing. It provides the current pixel coordinates (pix_x, pix_y) and the video_active signal to ensure signals are only sent during the visible area.
+
+Game Engine: A Finite State Machine (FSM) updated at every vertical sync (vsync) handles ball movement, collision detection against paddles and boundaries, and score incrementing.
+
+Procedural Graphics: Instead of using bitmaps, the graphics are generated using mathematical comparisons of the current pixel position.
+
+The Triforce is drawn using linear triangular inequalities.
+
+The Mushroom is drawn using a grid-based pixel art mapping to optimize silicon area.
+
+Color Output: A 2-bit per channel (R, G, B) output provides a total of 64 possible colors, though this design uses a specific palette for Link (Green) and Ganon (Red) aesthetics.
 
 ## How to test
 
-Explain how to use your project
+Once the bitstream is loaded into the FPGA or the chip is active:
+
+Reset: Press the rst_n button (active low) to initialize the ball at the center and reset scores to zero.
+
+Player 1 Controls: Use the first two bits of the input bus (ui_in[0] for Up, ui_in[1] for Down) to move the left (Green) paddle.
+
+Player 2 Controls: Use the next two bits (ui_in[2] for Up, ui_in[3] for Down) to move the right (Red) paddle.
+
+Gameplay: The first player to let the ball pass their paddle gives a point to the opponent. The score is displayed at the top of the screen next to each player's representative icon.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+To interact with this project, the following hardware is required:
+
+TinyVGA PMOD: Connected to the output pins (uo_out) to convert the digital signals into an analog VGA signal for a monitor.
+
+VGA Monitor: Capable of displaying a 640x480 resolution at a 60Hz refresh rate.
+
+Input Buttons: Four momentary push-buttons connected to ui_in[0:3] with pull-down resistors (or configured as per the carrier board specs) to control the movement of both players.
+
+Clock Source: A stable 25.175 MHz oscillator is recommended for standard VGA timing, although it can function with a 25 MHz clock with minor timing deviations.
