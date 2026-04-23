@@ -46,3 +46,21 @@ VGA Monitor: Capable of displaying a 640x480 resolution at a 60Hz refresh rate.
 Input Buttons: Four momentary push-buttons connected to ui_in[0:3] with pull-down resistors (or configured as per the carrier board specs) to control the movement of both players.
 
 Clock Source: A stable 25.175 MHz oscillator is recommended for standard VGA timing, although it can function with a 25 MHz clock with minor timing deviations.
+
+## Technical Specifications
+* **Clock Frequency:** 25.175 MHz (Standard VGA 640x480 @ 60Hz).
+* **Resolution:** 640 x 480 pixels.
+* **Video Standard:** VGA (Negative Sync).
+
+## Detailed Inputs/Outputs
+| Pin | Name | Description |
+| :--- | :--- | :--- |
+| ui_in[0] | P1_UP | Moves the left paddle up. |
+| ui_in[1] | P1_DOWN | Moves the left paddle down. |
+| ui_in[2] | P2_UP | Moves the right paddle up. |
+| ui_in[3] | P2_DOWN | Moves the right paddle down. |
+| uo_out[7] | HSYNC | Horizontal Sync (Connect to VGA Pin 13). |
+| uo_out[3] | VSYNC | Vertical Sync (Connect to VGA Pin 14). |
+| uo_out[0,4] | RED | Red color output (bits 0 and 1). |
+| uo_out[1,5] | GREEN | Green color output (bits 0 and 1). |
+| uo_out[2,6] | BLUE | Blue color output (bits 0 and 1). |
