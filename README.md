@@ -1,42 +1,55 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
+# PONG VGA Game
 
-# Tiny Tapeout Verilog  Project Template
+## Description
+This project implements a hardware-based **Pong game** for two players, designed to generate a standard **VGA signal (640x480 @ 60 Hz)**. The entire game logic, including collision detection, paddle movement, and video synchronization, is handled by dedicated digital logic without the use of a microcontroller or CPU.
 
-- [Read the documentation for project](docs/info.md)
+## Features
+* **Standard VGA Output:** Generates HSync and VSync signals for CRT or LCD monitors.
+* **Dual Player Controls:** Real-time paddle movement for two players.
+* **Dynamic Collision Physics:** Detects ball collisions with walls and paddles.
+* **Visual Elements:**
+    * Two vertical paddles.
+    * Mobile ball with velocity logic.
+    * Boundary rendering.
+* **Fully Digital Architecture:** Modular design using a custom HV-Sync generator.
 
-## What is Tiny Tapeout?
+## Interface
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+### Inputs
+| Pin | Name | Description |
+|:--- |:--- |:--- |
+| `clk` | Clock | System clock (Target: **25.175 MHz**). |
+| `rst_n` | Reset | Active-low asynchronous reset. |
+| `ui_in[3:0]` | Control | Movement inputs for both players. |
 
-To learn more and get started, visit https://tinytapeout.com.
+### Control Mapping (`ui_in`)
+| Bits | Function | Description |
+|:--- |:--- |:--- |
+| **ui_in[0]** | **P1 Up** | Moves the left paddle upwards. |
+| **ui_in[1]** | **P1 Down** | Moves the left paddle downwards. |
+| **ui_in[2]** | **P2 Up** | Moves the right paddle upwards. |
+| **ui_in[3]** | **P2 Down** | Moves the right paddle downwards. |
 
-## Set up your Verilog project
+### Output
+| Pin | Name | Description |
+|:--- |:--- |:--- |
+| **uo_out[7]** | **HSYNC** | Horizontal synchronization pulse (VGA Pin 13). |
+| **uo_out[3]** | **VSYNC** | Vertical synchronization pulse (VGA Pin 14). |
+| **uo_out[6:4, 2:0]**| **RGB** | 2-bit per channel digital color output. |
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+## Operation
+The design utilizes an internal **HV-Sync Generator** to track the current pixel position $(X, Y)$. 
 
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
+1. **Game Logic:** During the Vertical Blanking interval, the ball and paddle positions are updated based on user input and collision flags.
+2. **Video Generation:** During the Active Video region, a comparator-based logic determines if the current pixel belongs to a paddle, the ball, or the background, and outputs the corresponding RGB values.
 
-## Enable GitHub actions to build the results page
+## Usage
+The output is designed to be connected to:
+* A VGA monitor via a **DB15 connector**.
+* A simple **DAC** (like an R-2R ladder) for the color bits.
+* An **FPGA development board** (like the Altera Cyclone II) for real-time validation.
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
-
-## Resources
-
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
-
-## What next?
-
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+## Applications
+* **Digital Logic Education:** Demonstrates state machines and timing.
+* **Hardware Games:** Retro-gaming implementation on silicon.
+* **VGA Controllers:** Base architecture for video generation systems.
